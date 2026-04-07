@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Camille vs {{ champ }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+        function openTab(tabId) {
+            const tabs = document.querySelectorAll(".tab-panel");
+            const buttons = document.querySelectorAll(".tab-btn");
+
+            tabs.forEach(tab => tab.classList.remove("active"));
+            buttons.forEach(btn => btn.classList.remove("active"));
+
+            document.getElementById(tabId).classList.add("active");
+            document.querySelector(`[data-tab="${tabId}"]`).classList.add("active");
+        }
+
+        window.onload = function () {
+            openTab("tab-info");
+        };
+    </script>
+</head>
+<body>
+<div class="page">
+
+    <header class="hero matchup-clean-hero">
+        <div class="matchup-topbar">
+            <a href="/matchups" class="back-btn">⬅ Voltar</a>
+            <a href="/download/{{ champ }}" class="download-btn">⬇ Baixar guia</a>
+        </div>
+
+        <div class="clean-header-main">
+            <img
+                class="matchup-icon large"
+                src="https://ddragon.leagueoflegends.com/cdn/14.24.1/img/champion/{{ champ }}.png"
+                alt="{{ champ }}"
+            >
+            <div>
+                <h1>Camille vs {{ champ }}</h1>
+                <p class="clean-subtitle">{{ matchup.resumo }}</p>
+            </div>
+        </div>
+    </header>
+
+    <section class="tabs-wrapper">
+        <div class="tabs-bar">
+            <button class="tab-btn" data-tab="tab-info" onclick="openTab('tab-info')">Informações</button>
+            <button class="tab-btn" data-tab="tab-runas" onclick="openTab('tab-runas')">Runas</button>
+            <button class="tab-btn" data-tab="tab-itens" onclick="openTab('tab-itens')">Itemização</button>
+            <button class="tab-btn" data-tab="tab-botas" onclick="openTab('tab-botas')">Botas</button>
+            <button class="tab-btn" data-tab="tab-guia" onclick="openTab('tab-guia')">Guia da Lane</button>
+            <button class="tab-btn" data-tab="tab-wards" onclick="openTab('tab-wards')">Wards</button>
+        </div>
+
+        <div id="tab-info" class="tab-panel">
+            <div class="clean-grid two">
+                <article class="clean-card">
+                    <h2>Informações da matchup</h2>
+                    <div class="info-list">
+                        <div class="info-row"><span>Winrate da matchup</span><strong>{{ data.winrate }}%</strong></div>
+                        <div class="info-row"><span>Dificuldade</span><strong>{{ data.dificuldade }}</strong></div>
+                        <div class="info-row"><span>Habilidade crítica do oponente</span><strong>{{ matchup.cooldowns.habilidade_principal }}</strong></div>
+                    </div>
+                </article>
+
+                <article class="clean-card">
+                    <h2>Janela de punição</h2>
+                    <p>{{ matchup.janela_punicao }}</p>
+                    <p class="muted-text"><strong>Ameaça principal:</strong> {{ matchup.ameaca_principal }}</p>
+                </article>
+            </div>
+
+            <div class="clean-card">
+                <h2>CD das habilidades do inimigo</h2>
+                <div class="cd-grid">
+                    <div class="cd-box"><span>P</span><strong>{{ matchup.cooldowns.passiva }}</strong></div>
+                    <div class="cd-box"><span>Q</span><strong>{{ matchup.cooldowns.Q }}</strong></div>
+                    <div class="cd-box"><span>W</span><strong>{{ matchup.cooldowns.W }}</strong></div>
+                    <div class="cd-box"><span>E</span><strong>{{ matchup.cooldowns.E }}</strong></div>
+                    <div class="cd-box"><span>R</span><strong>{{ matchup.cooldowns.R }}</strong></div>
+                </div>
+                <p class="muted-text"><strong>Dica:</strong> {{ matchup.cooldowns.dica }}</p>
+            </div>
+        </div>
+
+        <div id="tab-runas" class="tab-panel">
+            <div class="clean-grid three">
+                <article class="clean-card">
+                    <h2>Padrão Camille</h2>
+                    <div class="rune-list vertical">
+                        {% for r in matchup.runas_padrao.primaria %}
+                        <div class="rune-item">
+                            {% if r.icon %}<img src="{{ r.icon }}" alt="{{ r.nome }}">{% endif %}
+                            <span>{{ r.nome }}</span>
+                        </div>
+                        {% endfor %}
+                        {% for r in matchup.runas_padrao.secundaria %}
+                        <div class="rune-item">
+                            {% if r.icon %}<img src="{{ r.icon }}" alt="{{ r.nome }}">{% endif %}
+                            <span>{{ r.nome }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="shard-pills">
+                        {% for shard in matchup.runas_padrao.shards %}
+                        <span class="shard-pill">{{ shard }}</span>
+                        {% endfor %}
+                    </div>
+                </article>
+
+                <article class="clean-card">
+                    <h2>Melhor para o confronto</h2>
+                    <div class="rune-list vertical">
+                        {% for r in matchup.runas_confronto.primaria %}
+                        <div class="rune-item">
+                            {% if r.icon %}<img src="{{ r.icon }}" alt="{{ r.nome }}">{% endif %}
+                            <span>{{ r.nome }}</span>
+                        </div>
+                        {% endfor %}
+                        {% for r in matchup.runas_confronto.secundaria %}
+                        <div class="rune-item">
+                            {% if r.icon %}<img src="{{ r.icon }}" alt="{{ r.nome }}">{% endif %}
+                            <span>{{ r.nome }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="shard-pills">
+                        {% for shard in matchup.runas_confronto.shards %}
+                        <span class="shard-pill">{{ shard }}</span>
+                        {% endfor %}
+                    </div>
+                </article>
+
+                <article class="clean-card">
+                    <h2>Outra opção</h2>
+                    <div class="rune-list vertical">
+                        {% for r in matchup.runas_recomendadas.primaria %}
+                        <div class="rune-item">
+                            {% if r.icon %}<img src="{{ r.icon }}" alt="{{ r.nome }}">{% endif %}
+                            <span>{{ r.nome }}</span>
+                        </div>
+                        {% endfor %}
+                        {% for r in matchup.runas_recomendadas.secundaria %}
+                        <div class="rune-item">
+                            {% if r.icon %}<img src="{{ r.icon }}" alt="{{ r.nome }}">{% endif %}
+                            <span>{{ r.nome }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="shard-pills">
+                        {% for shard in matchup.runas_recomendadas.shards %}
+                        <span class="shard-pill">{{ shard }}</span>
+                        {% endfor %}
+                    </div>
+                </article>
+            </div>
+        </div>
+
+        <div id="tab-itens" class="tab-panel">
+            <div class="clean-grid two">
+                <article class="clean-card">
+                    <h2>Item inicial</h2>
+                    <div class="item-line">
+                        {% if matchup.itens.item_inicial_icon %}
+                        <img src="{{ matchup.itens.item_inicial_icon }}" alt="{{ matchup.itens.item_inicial }}">
+                        {% endif %}
+                        <div>
+                            <strong>{{ matchup.itens.item_inicial }}</strong>
+                            <p>{{ matchup.itens.plano_compra }}</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="clean-card">
+                    <h2>Build completa para o confronto</h2>
+                    <p><strong>Situacionais:</strong></p>
+                    <div class="item-grid">
+                        {% for item in matchup.itens.situacionais %}
+                        <div class="item-box">
+                            {% if item.icon %}<img src="{{ item.icon }}" alt="{{ item.nome }}">{% endif %}
+                            <span>{{ item.nome }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </article>
+            </div>
+
+            <div class="clean-grid three">
+                <article class="clean-card">
+                    <h2>1º item</h2>
+                    {% for item in matchup.itens_winrate.item1 %}
+                    <div class="item-line small">
+                        {% if item.icon %}<img src="{{ item.icon }}" alt="{{ item.nome }}">{% endif %}
+                        <span>{{ item.nome }} — {{ item.winrate }}</span>
+                    </div>
+                    {% endfor %}
+                </article>
+
+                <article class="clean-card">
+                    <h2>2º item</h2>
+                    {% for item in matchup.itens_winrate.item2 %}
+                    <div class="item-line small">
+                        {% if item.icon %}<img src="{{ item.icon }}" alt="{{ item.nome }}">{% endif %}
+                        <span>{{ item.nome }} — {{ item.winrate }}</span>
+                    </div>
+                    {% endfor %}
+                </article>
+
+                <article class="clean-card">
+                    <h2>3º item</h2>
+                    {% for item in matchup.itens_winrate.item3 %}
+                    <div class="item-line small">
+                        {% if item.icon %}<img src="{{ item.icon }}" alt="{{ item.nome }}">{% endif %}
+                        <span>{{ item.nome }} — {{ item.winrate }}</span>
+                    </div>
+                    {% endfor %}
+                </article>
+            </div>
+        </div>
+
+        <div id="tab-botas" class="tab-panel">
+            <div class="clean-grid three">
+                <article class="clean-card">
+                    <h2>Vs muito AA / rush</h2>
+                    <p><strong>Opção:</strong> Placas de Aço</p>
+                    <p>Boa contra muito autoataque, pressão física e matchups onde rushar bota ajuda cedo.</p>
+                </article>
+
+                <article class="clean-card">
+                    <h2>Vs muito CC / AP</h2>
+                    <p><strong>Opção:</strong> Botas de Mercúrio</p>
+                    <p>Boa contra controle de grupo e dano mágico.</p>
+                </article>
+
+                <article class="clean-card">
+                    <h2>Opção CDR</h2>
+                    <p><strong>Opção:</strong> Botas Ionianas da Lucidez</p>
+                    <p>Boa quando você quer mais frequência de spells e o jogo permite uma opção mais agressiva.</p>
+                </article>
+            </div>
+
+            <div class="clean-card">
+                <h2>Melhor bota nessa matchup</h2>
+                <p><strong>Tipo:</strong> {{ matchup.boots.tipo }}</p>
+                <p><strong>Rush antes do 1º item:</strong> {{ "Sim" if matchup.boots.fechar_antes_primeiro_item else "Não" }}</p>
+                <p><strong>Motivo:</strong> {{ matchup.boots.motivo }}</p>
+                {% if matchup.boots.fechar_antes_primeiro_item %}
+                <p class="alert-text"><strong>Aviso:</strong> se for rushar bota, remova runa de bota grátis.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div id="tab-guia" class="tab-panel">
+            <div class="clean-grid two">
+                <article class="clean-card">
+                    <h2>Dicas da matchup do nível 1 ao 6</h2>
+                    <ul class="clean-list">
+                        <li><strong>Nível 1:</strong> {{ matchup.plano_lane.nivel_1 }}</li>
+                        <li><strong>Nível 2-3:</strong> {{ matchup.plano_lane.nivel_2_3 }}</li>
+                        <li><strong>Nível 4-5:</strong> {{ matchup.plano_lane.nivel_4_5 }}</li>
+                        <li><strong>Nível 6:</strong> {{ matchup.plano_lane.nivel_6 }}</li>
+                    </ul>
+                </article>
+
+                <article class="clean-card">
+                    <h2>Ordem das habilidades</h2>
+                    <ul class="clean-list">
+                        {% for linha in matchup.up_habilidades.nivel_1_3 %}
+                        <li>{{ linha }}</li>
+                        {% endfor %}
+                    </ul>
+                    <p><strong>Prioridade:</strong> {{ matchup.up_habilidades.prioridade }}</p>
+                </article>
+            </div>
+
+            <div class="clean-grid two">
+                <article class="clean-card">
+                    <h2>Power spike dele</h2>
+                    <p>{{ matchup.power_spikes.inimigo }}</p>
+                </article>
+
+                <article class="clean-card">
+                    <h2>Seu power spike</h2>
+                    <p>{{ matchup.power_spikes.camille }}</p>
+                </article>
+            </div>
+
+            <div class="clean-card">
+                <h2>O que fazer na lane phase</h2>
+                <ul class="clean-list">
+                    {% for linha in matchup.guia %}
+                    <li>{{ linha }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="clean-grid two">
+                <article class="clean-card">
+                    <h2>Dados da matchup</h2>
+                    <div class="info-list">
+                        <div class="info-row"><span>Kill pressure</span><strong>{{ matchup.guia[1].replace('Kill pressure estimada: ', '') if matchup.guia|length > 1 else '-' }}</strong></div>
+                        <div class="info-row"><span>Ouro aos 15 min</span><strong>{{ matchup.guia[0].replace('GD@15 estimado: ', '') if matchup.guia|length > 0 else '-' }}</strong></div>
+                    </div>
+                </article>
+
+                <article class="clean-card">
+                    <h2>Resumo prático</h2>
+                    <p>Foque na lane phase, respeite a habilidade crítica do oponente e jogue nas janelas de erro.</p>
+                </article>
+            </div>
+        </div>
+
+        <div id="tab-wards" class="tab-panel">
+            <div class="clean-grid two">
+                <article class="clean-card">
+                    <h2>Blue Side</h2>
+                    <ul class="clean-list">
+                        {% for linha in matchup.warding.blue_side %}
+                        <li>{{ linha }}</li>
+                        {% endfor %}
+                    </ul>
+                </article>
+
+                <article class="clean-card">
+                    <h2>Red Side</h2>
+                    <ul class="clean-list">
+                        {% for linha in matchup.warding.red_side %}
+                        <li>{{ linha }}</li>
+                        {% endfor %}
+                    </ul>
+                </article>
+            </div>
+
+            <article class="clean-card">
+                <h2>Quando comprar pink</h2>
+                <p>{{ matchup.warding.pink_quando }}</p>
+            </article>
+        </div>
+    </section>
+
+</div>
+</body>
+</html>

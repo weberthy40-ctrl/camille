@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camille Intelligence</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="page">
+        <header class="hero hero-home">
+            <div class="top-actions">
+                <a class="top-cta primary" href="/matchups">Matchups</a>
+                <a class="top-cta" href="/skins">Skins</a>
+            </div>
+
+            <div class="camille-home">
+                <img
+                    class="camille-home-image"
+                    src="https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Camille_0.jpg"
+                    alt="Camille"
+                >
+
+                <div class="camille-home-text">
+                    <h1>Camille Intelligence 🗡️</h1>
+                    <p class="subtitle">{{ camille.historia }}</p>
+                </div>
+            </div>
+        </header>
+
+        <section class="section-block">
+            <div class="section-head">
+                <h2>Habilidades da Camille</h2>
+                <p>Resumo rápido do kit, cooldowns e padrão de progressão.</p>
+            </div>
+
+            <div class="skills-grid">
+                {% for key, skill in camille.habilidades.items() %}
+                <article class="skill-card">
+                    <h3>{{ key }} — {{ skill.nome }}</h3>
+                    <p>{{ skill.descricao }}</p>
+                    <p><strong>Cooldown:</strong> {{ skill.cds }}</p>
+                </article>
+                {% endfor %}
+            </div>
+
+            <div class="up-table-wrapper">
+                <h3>Ordem padrão de up do nível 1 ao 18</h3>
+
+                <div class="up-grid-header">
+                    <div class="up-skill-label">Skill</div>
+                    {% for n in range(1, 19) %}
+                    <div class="up-cell level">{{ n }}</div>
+                    {% endfor %}
+                </div>
+
+                {% for skill in ["Q", "W", "E", "R"] %}
+                <div class="up-grid-row">
+                    <div class="up-skill-label">{{ skill }}</div>
+                    {% for n in range(1, 19) %}
+                        {% if n in camille.ordem_up_grid[skill] %}
+                        <div class="up-cell filled">{{ skill }}</div>
+                        {% else %}
+                        <div class="up-cell empty"></div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+</body>
+</html>

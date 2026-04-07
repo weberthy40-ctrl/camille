@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Matchups - Camille</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+        function filterChampion() {
+            const input = document.getElementById("champ-search").value.toLowerCase();
+            const cards = document.querySelectorAll(".matchup-icon-card");
+
+            cards.forEach(card => {
+                const name = card.getAttribute("data-champion");
+                card.style.display = name.includes(input) ? "flex" : "none";
+            });
+        }
+    </script>
+</head>
+<body>
+<div class="page">
+
+    <header class="hero hero-small matchups-hero">
+        <a href="/" class="back-btn">⬅ Voltar</a>
+        <h1>MATCHUPS DA CAMILLE</h1>
+        <p class="matchups-subtitle">Clique no campeão para abrir o guia completo</p>
+
+        <div class="search-bar">
+            <input
+                id="champ-search"
+                list="champions-list"
+                type="text"
+                placeholder="Buscar campeão..."
+                value="{{ busca }}"
+                onkeyup="filterChampion()"
+            >
+            <datalist id="champions-list">
+                {% for group_name, champs in ranked.items() %}
+                    {% for row in champs %}
+                    <option value="{{ row.champ }}">
+                    {% endfor %}
+                {% endfor %}
+            </datalist>
+        </div>
+    </header>
+
+    <section class="matchups-columns">
+        {% for group_name in ["Sugiro Ban / Impossível", "Difícil", "Médio", "Fácil"] %}
+        <div class="matchups-column">
+            <div class="matchups-column-title
+                {% if group_name == 'Fácil' %}easy-title{% endif %}
+                {% if group_name == 'Médio' %}medium-title{% endif %}
+                {% if group_name == 'Difícil' %}hard-title{% endif %}
+                {% if group_name == 'Sugiro Ban / Impossível' %}ban-title{% endif %}
+            ">
+                {% if group_name == "Sugiro Ban / Impossível" %}
+                    Sugiro Ban / Impossível
+                {% else %}
+                    {{ group_name }}
+                {% endif %}
+            </div>
+
+            <div class="matchups-icon-grid">
+                {% for row in ranked[group_name] %}
+                <a
+                    href="/matchup/{{ row.champ }}"
+                    class="matchup-icon-card"
+                    data-champion="{{ row.champ|lower }}"
+                    title="{{ row.champ }} — WR {{ row.winrate }}%"
+                >
+                    <img
+                        src="https://ddragon.leagueoflegends.com/cdn/14.24.1/img/champion/{{ row.champ }}.png"
+                        alt="{{ row.champ }}"
+                    >
+                    <span class="matchup-card-name">{{ row.champ }}</span>
+                    <span class="matchup-card-winrate">{{ row.winrate }}%</span>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </section>
+
+</div>
+</body>
+</html>

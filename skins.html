@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Skins - Camille</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="page">
+
+    <header class="hero hero-small">
+        <a href="/" class="back-btn">⬅ Voltar</a>
+        <h1>Skins da Camille</h1>
+        <p class="subtitle">Catálogo visual com nome em português e cromas cadastrados.</p>
+    </header>
+
+    <div class="skins-gallery">
+        {% for skin in skins %}
+        <article class="skin-card">
+            <img class="skin-image" src="{{ skin.imagem }}" alt="{{ skin.nome }}">
+
+            <div class="skin-content">
+                <h2>{{ skin.nome }}</h2>
+                <p><strong>Classificação:</strong> {{ skin.score }}</p>
+
+                <p><strong>Cromas:</strong></p>
+                <ul>
+                    {% if skin.cromas %}
+                        {% for c in skin.cromas %}
+                        <li>{{ c }}</li>
+                        {% endfor %}
+                    {% else %}
+                        <li>Sem cromas cadastrados</li>
+                    {% endif %}
+                </ul>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+
+</div>
+</body>
+</html>
